@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, FormGroup, NonNullableFormBuilder } from '@angular/forms';
+import { FormGroup, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,8 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-import { CoursesService } from '../service/courses.service';
-import { CoursesListComponent } from '../courses-list/courses-list.component';
+import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
+import { CoursesService } from '../../service/courses.service';
+
+
 
 @Component({
   selector: 'app-course-form',
@@ -28,9 +30,9 @@ export class CourseFormComponent implements OnInit {
     private service: CoursesService,
     private snackBar: MatSnackBar,
     private location: Location) {
-     this.form = this.formBuilder.group({
-     name: [''],
-     category: ['']
+    this.form = this.formBuilder.group({
+      name: [''],
+      category: ['']
     });
   }
 

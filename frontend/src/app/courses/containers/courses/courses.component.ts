@@ -10,11 +10,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
 
-import { ErrorDialogComponent } from '../../shared/components/error-dialog/error-dialog.component';
-import { CategoryPipe } from '../../shared/pipes/category.pipe';
-import { Course } from '../model/course';
-import { CoursesService } from '../service/courses.service';
-import { CoursesListComponent } from '../courses-list/courses-list.component';
+import { ErrorDialogComponent } from '../../../shared/components/error-dialog/error-dialog.component';
+import { CategoryPipe } from '../../../shared/pipes/category.pipe';
+import { Course } from '../../model/course';
+import { CoursesService } from '../../service/courses.service';
+import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 
 @Component({
   selector: 'app-courses',
@@ -35,12 +35,12 @@ export class CoursesComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.courses$ = this.coursesService.list()
-    .pipe(
-      catchError(error => {
-        this.onError('Erro ao carregar cursos.');
-        return of([])
-      })
-    );
+      .pipe(
+        catchError(error => {
+          this.onError('Erro ao carregar cursos.');
+          return of([])
+        })
+      );
 
   }
 
@@ -54,7 +54,7 @@ export class CoursesComponent implements OnInit {
     // throw new Error('Method not implemented.');
   }
 
-  onAdd(){
+  onAdd() {
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
