@@ -11,6 +11,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { CoursesService } from '../../service/courses.service';
+import { Course } from '../../model/course';
+import { ActivatedRoute } from '@angular/router';
 
 
 
@@ -29,14 +31,25 @@ export class CourseFormComponent implements OnInit {
     private formBuilder: NonNullableFormBuilder,
     private service: CoursesService,
     private snackBar: MatSnackBar,
-    private location: Location) {
+    private location: Location,
+    private route: ActivatedRoute
+
+    ) {
     this.form = this.formBuilder.group({
+      _id: [''],
       name: [''],
       category: ['']
     });
   }
 
   ngOnInit(): void {
+    const course: Course = this.route.snapshot.data['course'];
+    console.log(course)
+    this.form.setValue({
+      _id:course._id,
+      name: course.name,
+      category: course.category
+    })
     // this.form.value.name = null;
   }
 
