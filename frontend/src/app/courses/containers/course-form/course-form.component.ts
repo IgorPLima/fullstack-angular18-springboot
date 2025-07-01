@@ -11,6 +11,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { CoursesService } from '../../service/courses.service';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs';
+import { Course } from '../../model/course';
 
 
 
@@ -24,12 +27,17 @@ import { CoursesService } from '../../service/courses.service';
 export class CourseFormComponent implements OnInit {
 
   form!: FormGroup;
+  courseId!: string;
+  isEdit = false;
 
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private service: CoursesService,
     private snackBar: MatSnackBar,
-    private location: Location) {
+    private location: Location,
+    private route: ActivatedRoute,
+    private courseService: CoursesService
+  ) {
     this.form = this.formBuilder.group({
       name: [''],
       category: ['']
@@ -37,7 +45,31 @@ export class CourseFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.form.value.name = null;
+    this.route.paramMap
+      .pipe(
+        switchMap(params => {
+          const id = params.get('id');
+          if (id) {
+            this.isEdit = true;
+            this.courseId = id;
+            return this.courseService.loadById(id);
+          }
+          return [];
+        })
+      )
+      .subscribe({
+        next: (course: Course) => {
+          if (course) {
+            this.form.patchValue({
+              name: course.name,
+              category: course.category
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Erro ao carregar curso: ', err);
+        }
+      })
   }
 
   onSubmit() {
