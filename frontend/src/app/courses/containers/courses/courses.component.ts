@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,9 +13,9 @@ import { catchError, Observable, of } from 'rxjs';
 
 import { ErrorDialogComponent } from '../../../shared/components/error-dialog/error-dialog.component';
 import { CategoryPipe } from '../../../shared/pipes/category.pipe';
+import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { Course } from '../../model/course';
 import { CoursesService } from '../../service/courses.service';
-import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 
 @Component({
   selector: 'app-courses',
@@ -25,15 +26,20 @@ import { CoursesListComponent } from '../../components/courses-list/courses-list
 })
 export class CoursesComponent implements OnInit {
 
-  courses$: Observable<Course[]>;
+  courses$: Observable<Course[]> | null = null;
   displayedColumns = ['name', 'category', 'actions'];
 
   constructor(
     private coursesService: CoursesService,
     public dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
   ) {
+    this.refresh();
+  }
+
+  refresh() {
     this.courses$ = this.coursesService.list()
       .pipe(
         catchError(error => {
@@ -41,7 +47,6 @@ export class CoursesComponent implements OnInit {
           return of([])
         })
       );
-
   }
 
   onError(errorMsg: string) {
@@ -58,8 +63,22 @@ export class CoursesComponent implements OnInit {
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
-  onEdit(course: Course){
+  onEdit(course: Course) {
     this.router.navigate(['edit', course._id], { relativeTo: this.route });
+  }
+
+  onDelete(course: Course) {
+    this.coursesService.delete(course._id).subscribe(
+      () => {
+        this.refresh();
+        this.snackBar.open('Curso deletado com sucesso', 'X', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        });
+      },
+      error => this.onError('Erro ao tentar deletar curso!')
+    );
   }
 
 }
