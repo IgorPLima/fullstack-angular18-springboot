@@ -16,6 +16,7 @@ import { CategoryPipe } from '../../../shared/pipes/category.pipe';
 import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { Course } from '../../model/course';
 import { CoursesService } from '../../service/courses.service';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-courses',
@@ -68,17 +69,26 @@ export class CoursesComponent implements OnInit {
   }
 
   onDelete(course: Course) {
-    this.coursesService.delete(course._id).subscribe(
-      () => {
-        this.refresh();
-        this.snackBar.open('Curso deletado com sucesso', 'X', {
-          duration: 5000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center'
-        });
-      },
-      error => this.onError('Erro ao tentar deletar curso!')
-    );
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: 'Tem certeza que deseja remover esse curso?',
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.coursesService.delete(course._id).subscribe(
+          () => {
+            this.refresh();
+            this.snackBar.open('Curso deletado com sucesso', 'X', {
+              duration: 5000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            });
+          },
+          error => this.onError('Erro ao tentar deletar curso!')
+        );
+      }
+    });
   }
 
 }
